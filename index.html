@@ -7,6 +7,8 @@
   <meta name="description" content="A comic-style roguelike shooter where every bullet counts and every zombie bites. Developed by ArchiMeta.">
 
   <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 
   <style>
@@ -18,8 +20,94 @@
       --text-gray: #a0a0c0;
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* 🔥 动态背景容器 */
+    .dynamic-bg {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+      overflow: hidden;
+    }
+
+    /* 主背景图：全屏 + 微动 */
+    .bg-city {
+      width: 100%;
+      height: 100%;
+      background: url('./assets/bg-city') center/cover no-repeat;
+      filter: brightness(0.7) contrast(1.1);
+      animation: cityPulse 12s infinite alternate ease-in-out;
+    }
+
+    /* 火焰区域：放大 + 跳动 */
+    .fire-area {
+      position: absolute;
+      bottom: 18%;
+      left: 15%;
+      width: 100px;
+      height: 100px;
+      clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);
+      background: url('./assets/bg-city') center/cover no-repeat;
+      opacity: 0.8;
+      animation: fireGlow 2s infinite alternate;
+      transform-origin: bottom center;
+    }
+
+    /* 烟雾区域：模糊 + 上升 */
+    .smoke-area {
+      position: absolute;
+      top: 20%;
+      right: 15%;
+      width: 150px;
+      height: 150px;
+      clip-path: ellipse(50% 40%);
+      background: url('./assets/bg-city') center/cover no-repeat;
+      opacity: 0.4;
+      filter: blur(10px);
+      animation: smokeRise 10s infinite linear;
+    }
+
+    /* 窗户灯光闪烁（模拟远处建筑） */
+    .window-light {
+      position: absolute;
+      width: 8px;
+      height: 12px;
+      background: #ffcc00;
+      border-radius: 2px;
+      opacity: 0.7;
+      animation: windowFlicker 3s infinite alternate;
+    }
+    .window-light:nth-child(1) { top: 30%; left: 40%; animation-delay: 0s; }
+    .window-light:nth-child(2) { top: 25%; left: 45%; animation-delay: 1s; }
+    .window-light:nth-child(3) { top: 35%; left: 50%; animation-delay: 2s; }
+
+    /* 动画定义 */
+    @keyframes cityPulse {
+      0% { filter: brightness(0.7) contrast(1.1); }
+      50% { filter: brightness(0.8) contrast(1.2); }
+      100% { filter: brightness(0.7) contrast(1.1); }
+    }
+
+    @keyframes fireGlow {
+      0% { transform: scale(0.95) translateY(0); opacity: 0.7; }
+      100% { transform: scale(1.1) translateY(-10px); opacity: 1; }
+    }
+
+    @keyframes smokeRise {
+      0% { transform: translateY(0) rotate(0deg); opacity: 0.3; }
+      100% { transform: translateY(-100px) rotate(360deg); opacity: 0.8; }
+    }
+
+    @keyframes windowFlicker {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.9; }
+    }
+
+    /* 原有样式保持不变 */
     body {
-      background: var(--bg);
+      background: transparent;
       color: var(--text);
       font-family: 'Inter', sans-serif;
       line-height: 1.6;
@@ -33,8 +121,11 @@
       justify-content: space-between;
       align-items: center;
       border-bottom: 1px solid rgba(185,103,255,0.2);
+      position: relative;
+      z-index: 10;
     }
     .logo { font-size: 1.8rem; background: linear-gradient(to right, var(--neon-blue), var(--neon-purple)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    
     .lang-btn {
       background: none;
       border: 1px solid var(--neon-purple);
@@ -44,73 +135,47 @@
       cursor: pointer;
       font-size: 0.9rem;
       transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
     }
-    .lang-dropdown {
-  position: relative;
-  display: inline-block;
-}
-
-.lang-btn {
-  background: none;
-  border: 1px solid var(--neon-purple);
-  color: var(--neon-purple);
-  padding: 0.4rem 1rem;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 0.9rem;
-  transition: all 0.3s;
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.lang-btn:hover {
-  background: rgba(185,103,255,0.1);
-}
-
-.lang-menu {
-  position: absolute;
-  top: 100%;
-  right: 0;
-  margin-top: 0.3rem;
-  background: #121222;
-  border: 1px solid var(--neon-purple);
-  border-radius: 6px;
-  list-style: none;
-  min-width: 120px;
-  z-index: 1000;
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(-10px);
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-}
-
-.lang-menu.show {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
-}
-
-.lang-menu li {
-  padding: 0.5rem 1rem;
-}
-
-.lang-menu li a {
-  color: var(--text);
-  text-decoration: none;
-  display: block;
-  transition: color 0.2s;
-}
-
-.lang-menu li a:hover {
-  color: var(--neon-purple);
-}
-
     .lang-btn:hover { background: rgba(185,103,255,0.1); }
+    .lang-menu {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      margin-top: 0.3rem;
+      background: #121222;
+      border: 1px solid var(--neon-purple);
+      border-radius: 6px;
+      list-style: none;
+      min-width: 120px;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+    }
+    .lang-menu.show {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+    .lang-menu li { padding: 0.5rem 1rem; }
+    .lang-menu li a {
+      color: var(--text);
+      text-decoration: none;
+      display: block;
+      transition: color 0.2s;
+    }
+    .lang-menu li a:hover { color: var(--neon-purple); }
+
     .hero {
       text-align: center;
       padding: 5rem 5% 3rem;
+      position: relative;
+      z-index: 5;
     }
     .slogan {
       font-size: 2.8rem;
@@ -143,6 +208,8 @@
       padding: 3rem 5%;
       max-width: 1000px;
       margin: 0 auto;
+      position: relative;
+      z-index: 5;
     }
     .screenshots {
       display: grid;
@@ -155,14 +222,28 @@
       padding: 2.5rem 5%;
       border-top: 1px solid rgba(0,240,255,0.1);
       color: var(--text-gray);
+      position: relative;
+      z-index: 5;
     }
     @media (max-width: 768px) {
       .slogan { font-size: 2rem; }
       .desc { font-size: 1rem; }
+      .fire-area { width: 60px; height: 60px; bottom: 10%; left: 10%; }
+      .smoke-area { width: 100px; height: 100px; top: 15%; right: 10%; }
     }
   </style>
 </head>
 <body>
+
+  <!-- ✨ 动态背景 -->
+  <div class="dynamic-bg">
+    <div class="bg-city"></div>
+    <div class="fire-area"></div>
+    <div class="smoke-area"></div>
+    <div class="window-light"></div>
+    <div class="window-light"></div>
+    <div class="window-light"></div>
+  </div>
 
   <header>
     <div class="logo">BALLS:ZOMBIE</div>
@@ -178,7 +259,6 @@
   <section class="hero">
     <h1 class="slogan neon">SURVIVE THE Z WAVE</h1>
     <p class="desc">A comic-style roguelike shooter where every bullet counts and every zombie bites.</p>
-    <!-- 🔴 已填入你的真实表单链接 -->
     <a href="https://docs.google.com/forms/d/e/1FAIpQLSfyN7yKVDe5SP1c85GSOzUnKiI8RGw1yv0COWzltb0Tm7dATw/viewform" target="_blank" class="btn">PRE-ORDER NOW</a>
   </section>
 
@@ -205,8 +285,9 @@
     <p>&copy; 2026 ArchiMeta. All rights reserved.</p>
     <p>contact@archimeta.com | <a href="https://discord.gg/your-invite" style="color:var(--neon-blue);">Join Discord</a></p>
   </footer>
+
+  <!-- 多语言脚本（启用自动检测） -->
   <script>
-    // 🌐 语言数据
     const translations = {
       en: {
         slogan: "SURVIVE THE Z-WAVE",
@@ -223,46 +304,31 @@
         aboutDesc: "《Balls: Zombie》是一款节奏快速的Roguelike射击游戏，背景设定在一个被变异僵尸占据的末日城市。拥有漫画风格的视觉效果、永久死亡机制和随机强化道具，每一次游戏都不一样。"
       }
     };
-    
-    // 🧠 默认英语
+
     function getCurrentLang() {
-      return 'en'
-    //获取当前语言（优先用 localStorage，否则用浏览器默认）
-    //function getCurrentLang() {
-     // const saved = localStorage.getItem('userLang');
-     // if (saved && ['en', 'zh'].includes(saved)) return saved;
-      
-      // 默认根据浏览器语言
-      //const browserLang = navigator.language.startsWith('zh') ? 'zh' : 'en';
-      //localStorage.setItem('userLang', browserLang);
-      //return browserLang;
+      const saved = localStorage.getItem('userLang');
+      if (saved && ['en', 'zh'].includes(saved)) return saved;
+      return navigator.language.startsWith('zh') ? 'zh' : 'en';
     }
-    
-    // 🖼️ 更新页面文本
+
     function updatePageText(lang) {
       document.querySelector('.slogan').textContent = translations[lang].slogan;
       document.querySelector('.desc').textContent = translations[lang].desc;
       document.querySelector('.btn').textContent = translations[lang].btn;
       document.querySelector('h2').textContent = translations[lang].about;
-      document.querySelectorAll('p')[2].textContent = translations[lang].aboutDesc;
+      document.querySelectorAll('.section p')[0].textContent = translations[lang].aboutDesc;
       document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
-      
-      // 保存选择
       localStorage.setItem('userLang', lang);
     }
-    
-    // 🎯 初始化语言
+
     let currentLang = getCurrentLang();
     updatePageText(currentLang);
-    
-    // 📥 绑定下拉菜单点击事件
+
     document.getElementById('langToggle').addEventListener('click', function(e) {
       e.stopPropagation();
-      const menu = document.getElementById('langMenu');
-      menu.classList.toggle('show');
+      document.getElementById('langMenu').classList.toggle('show');
     });
-    
-    // 📥 菜单项点击
+
     document.querySelectorAll('#langMenu a').forEach(link => {
       link.addEventListener('click', function(e) {
         e.preventDefault();
@@ -271,75 +337,10 @@
         document.getElementById('langMenu').classList.remove('show');
       });
     });
-    
-    // 🔒 点击页面其他地方关闭菜单
-    document.addEventListener('click', function() {
+
+    document.addEventListener('click', () => {
       document.getElementById('langMenu').classList.remove('show');
     });
-    </script>
-    <!-- 在 <body> 最底部添加 -->
-<div id="dynamic-bg"></div>
-
-<script type="module">
-  import * as THREE from 'https://unpkg.com/three@0.160.1/build/three.module.js';
-
-  // 创建场景
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-  const renderer = new THREE.WebGLRenderer({ alpha: true });
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  renderer.setPixelRatio(window.devicePixelRatio);
-  document.getElementById('dynamic-bg').appendChild(renderer.domElement);
-
-  // 添加粒子
-  const particles = new THREE.BufferGeometry();
-  const particleCount = 2000;
-  const posArray = new Float32Array(particleCount * 3);
-  for (let i = 0; i < particleCount * 3; i++) {
-    posArray[i] = (Math.random() - 0.5) * 20;
-  }
-  particles.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
-
-  const material = new THREE.PointsMaterial({
-    color: 0xb967ff,
-    size: 0.1,
-    transparent: true,
-    opacity: 0.8
-  });
-
-  const points = new THREE.Points(particles, material);
-  scene.add(points);
-
-  camera.position.z = 5;
-
-  // 动画循环
-  function animate() {
-    requestAnimationFrame(animate);
-    points.rotation.y += 0.002;
-    renderer.render(scene, camera);
-  }
-  animate();
-
-  // 响应窗口缩放
-  window.addEventListener('resize', () => {
-    camera.aspect = window.innerWidth / window.innerHeight;
-    camera.updateProjectionMatrix();
-    renderer.setSize(window.innerWidth, window.innerHeight);
-  });
-</script>
-
-<style>
-  #dynamic-bg {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: -1;
-    pointer-events: none; /* 不阻挡点击 */
-  }
-  body { margin: 0; overflow-x: hidden; }
-  
-</style>
+  </script>
 </body>
 </html>
