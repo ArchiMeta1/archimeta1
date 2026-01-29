@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>balls:zombie — Roguelike Zombie Shooter by ArchiMeta</title>
+  <meta name="description" content="A comic-style roguelike shooter where every bullet counts and every zombie bites. Developed by ArchiMeta.">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0a0a14;
+      --neon-blue: #00f0ff;
+      --neon-purple: #b967ff;
+      --text: #e0e0ff;
+      --text-gray: #a0a0c0;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+    h1, .logo, .btn { font-family: 'Orbitron', sans-serif; text-transform: uppercase; }
+    .neon { color: var(--neon-purple); text-shadow: 0 0 10px var(--neon-purple), 0 0 20px var(--neon-purple); }
+    header {
+      padding: 1rem 5%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(185,103,255,0.2);
+    }
+    .logo { font-size: 1.8rem; background: linear-gradient(to right, var(--neon-blue), var(--neon-purple)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+    .lang-btn {
+      background: none;
+      border: 1px solid var(--neon-purple);
+      color: var(--neon-purple);
+      padding: 0.4rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      transition: all 0.3s;
+    }
+    .lang-dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.lang-btn {
+  background: none;
+  border: 1px solid var(--neon-purple);
+  color: var(--neon-purple);
+  padding: 0.4rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.lang-btn:hover {
+  background: rgba(185,103,255,0.1);
+}
+
+.lang-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  margin-top: 0.3rem;
+  background: #121222;
+  border: 1px solid var(--neon-purple);
+  border-radius: 6px;
+  list-style: none;
+  min-width: 120px;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+}
+
+.lang-menu.show {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.lang-menu li {
+  padding: 0.5rem 1rem;
+}
+
+.lang-menu li a {
+  color: var(--text);
+  text-decoration: none;
+  display: block;
+  transition: color 0.2s;
+}
+
+.lang-menu li a:hover {
+  color: var(--neon-purple);
+}
+
+    .lang-btn:hover { background: rgba(185,103,255,0.1); }
+    .hero {
+      text-align: center;
+      padding: 5rem 5% 3rem;
+    }
+    .slogan {
+      font-size: 2.8rem;
+      margin: 1.5rem 0;
+      color: white;
+    }
+    .desc {
+      max-width: 700px;
+      margin: 0 auto 2.5rem;
+      color: var(--text-gray);
+      font-size: 1.1rem;
+    }
+    .btn {
+      display: inline-block;
+      padding: 0.8rem 2.2rem;
+      background: transparent;
+      color: var(--neon-purple);
+      border: 2px solid var(--neon-purple);
+      border-radius: 4px;
+      font-size: 1.1rem;
+      text-decoration: none;
+      transition: all 0.3s;
+      margin-top: 1rem;
+    }
+    .btn:hover {
+      background: rgba(185,103,255,0.1);
+      box-shadow: 0 0 15px var(--neon-purple);
+    }
+    .section {
+      padding: 3rem 5%;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .screenshots {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    footer {
+      text-align: center;
+      padding: 2.5rem 5%;
+      border-top: 1px solid rgba(0,240,255,0.1);
+      color: var(--text-gray);
+    }
+    @media (max-width: 768px) {
+      .slogan { font-size: 2rem; }
+      .desc { font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="logo">BALLS:ZOMBIE</div>
+    <div class="lang-dropdown">
+      <button id="langToggle" class="lang-btn">🌐 Language</button>
+      <ul id="langMenu" class="lang-menu">
+        <li><a href="#" data-lang="zh">中文</a></li>
+        <li><a href="#" data-lang="en">English</a></li>
+      </ul>
+    </div>
+  </header>
+
+  <section class="hero">
+    <h1 class="slogan neon">SURVIVE THE Z WAVE</h1>
+    <p class="desc">A comic-style roguelike shooter where every bullet counts and every zombie bites.</p>
+    <!-- 🔴 已填入你的真实表单链接 -->
+    <a href="https://docs.google.com/forms/d/e/1FAIpQLSfyN7yKVDe5SP1c85GSOzUnKiI8RGw1yv0COWzltb0Tm7dATw/viewform" target="_blank" class="btn">PRE-ORDER NOW</a>
+  </section>
+
+  <section class="section">
+    <h2 style="text-align:center; color:white;">ABOUT THE GAME</h2>
+    <p style="text-align:center; margin:1.5rem 0;">
+      balls:zombie is a fast-paced roguelike shooter set in a post-apocalyptic city overrun by mutated zombies. 
+      With comic-book visuals, permadeath mechanics, and randomized power-ups, no two runs are the same.
+    </p>
+    <div class="screenshots">
+      <div>
+        <img src="https://placehold.co/600x400/1a1a2e/00f0ff?text=Gameplay+1" alt="Gameplay Screenshot 1" style="width:100%; height:180px; object-fit:cover; border-radius:8px;">
+      </div>
+      <div>
+        <img src="https://placehold.co/600x400/16213e/b967ff?text=Power-ups" alt="Gameplay Screenshot 2" style="width:100%; height:180px; object-fit:cover; border-radius:8px;">
+      </div>
+      <div>
+        <img src="https://placehold.co/600x400/0f3460/ffffff?text=Zombie+Wave" alt="Gameplay Screenshot 3" style="width:100%; height:180px; object-fit:cover; border-radius:8px;">
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p>&copy; 2026 ArchiMeta. All rights reserved.</p>
+    <p>contact@archimeta.com | <a href="https://discord.gg/your-invite" style="color:var(--neon-blue);">Join Discord</a></p>
+  </footer>
+  <script>
+    // 🌐 语言数据
+    const translations = {
+      en: {
+        slogan: "SURVIVE THE Z-WAVE",
+        desc: "A high-speed comic-book style roguelike shooter. Every bullet matters. Every zombie bites.",
+        btn: "PRE-ORDER NOW",
+        about: "ABOUT THE GAME",
+        aboutDesc: "Balls: Zombie is a fast-paced roguelike shooter set in a post-apocalyptic city overrun by mutated zombies. With comic-book visuals, permadeath mechanics, and randomized power-ups, no two runs are the same."
+      },
+      zh: {
+        slogan: "挺过这波",
+        desc: "一款漫画风格的Roguelike射击游戏，每一颗子弹都至关重要，每一只僵尸都会咬人。",
+        btn: "立即预约",
+        about: "关于游戏",
+        aboutDesc: "《Balls: Zombie》是一款节奏快速的Roguelike射击游戏，背景设定在一个被变异僵尸占据的末日城市。拥有漫画风格的视觉效果、永久死亡机制和随机强化道具，每一次游戏都不一样。"
+      }
+    };
+    
+    // 🧠 默认英语
+    function getCurrentLang() {
+      return 'en'
+    //获取当前语言（优先用 localStorage，否则用浏览器默认）
+    //function getCurrentLang() {
+     // const saved = localStorage.getItem('userLang');
+     // if (saved && ['en', 'zh'].includes(saved)) return saved;
+      
+      // 默认根据浏览器语言
+      //const browserLang = navigator.language.startsWith('zh') ? 'zh' : 'en';
+      //localStorage.setItem('userLang', browserLang);
+      //return browserLang;
+    }
+    
+    // 🖼️ 更新页面文本
+    function updatePageText(lang) {
+      document.querySelector('.slogan').textContent = translations[lang].slogan;
+      document.querySelector('.desc').textContent = translations[lang].desc;
+      document.querySelector('.btn').textContent = translations[lang].btn;
+      document.querySelector('h2').textContent = translations[lang].about;
+      document.querySelectorAll('p')[2].textContent = translations[lang].aboutDesc;
+      document.documentElement.lang = lang === 'zh' ? 'zh-CN' : 'en';
+      
+      // 保存选择
+      localStorage.setItem('userLang', lang);
+    }
+    
+    // 🎯 初始化语言
+    let currentLang = getCurrentLang();
+    updatePageText(currentLang);
+    
+    // 📥 绑定下拉菜单点击事件
+    document.getElementById('langToggle').addEventListener('click', function(e) {
+      e.stopPropagation();
+      const menu = document.getElementById('langMenu');
+      menu.classList.toggle('show');
+    });
+    
+    // 📥 菜单项点击
+    document.querySelectorAll('#langMenu a').forEach(link => {
+      link.addEventListener('click', function(e) {
+        e.preventDefault();
+        const lang = this.getAttribute('data-lang');
+        updatePageText(lang);
+        document.getElementById('langMenu').classList.remove('show');
+      });
+    });
+    
+    // 🔒 点击页面其他地方关闭菜单
+    document.addEventListener('click', function() {
+      document.getElementById('langMenu').classList.remove('show');
+    });
+    </script>
+    <!-- 在 <body> 最底部添加 -->
+<div id="dynamic-bg"></div>
+
+<script type="module">
+  import * as THREE from 'https://unpkg.com/three@0.160.1/build/three.module.js';
+
+  // 创建场景
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({ alpha: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(window.devicePixelRatio);
+  document.getElementById('dynamic-bg').appendChild(renderer.domElement);
+
+  // 添加粒子
+  const particles = new THREE.BufferGeometry();
+  const particleCount = 2000;
+  const posArray = new Float32Array(particleCount * 3);
+  for (let i = 0; i < particleCount * 3; i++) {
+    posArray[i] = (Math.random() - 0.5) * 20;
+  }
+  particles.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+  const material = new THREE.PointsMaterial({
+    color: 0xb967ff,
+    size: 0.1,
+    transparent: true,
+    opacity: 0.8
+  });
+
+  const points = new THREE.Points(particles, material);
+  scene.add(points);
+
+  camera.position.z = 5;
+
+  // 动画循环
+  function animate() {
+    requestAnimationFrame(animate);
+    points.rotation.y += 0.002;
+    renderer.render(scene, camera);
+  }
+  animate();
+
+  // 响应窗口缩放
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+</script>
+
+<style>
+  #dynamic-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none; /* 不阻挡点击 */
+  }
+  body { margin: 0; overflow-x: hidden; }
+  
+</style>
+</body>
+</html>
